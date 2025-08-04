@@ -1,17 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+// Validate environment variables with fallbacks
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key'
 
-// Validate environment variables
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables')
-}
-
-export const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-)
+// Create Supabase client with fallback values
+export const supabase = createClient(supabaseUrl, supabaseKey)
 
 export interface Candidate {
   id: string
@@ -32,7 +26,7 @@ export interface MatchedCandidate {
 
 export async function fetchCandidatesPaginated(limit = 1000): Promise<Candidate[]> {
   // Check if Supabase is properly configured
-  if (!supabaseUrl || !supabaseKey) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY) {
     console.error('Supabase not configured')
     return []
   }
