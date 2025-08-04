@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     
     let jobDescription = ''
     let extraNotes = ''
-    let pdfBuffer: Buffer | null = null
+    let uploadedPdfBuffer: Buffer | null = null
 
     if (contentType.includes('multipart/form-data')) {
       // Handle PDF file upload from n8n
@@ -26,10 +26,10 @@ export async function POST(request: NextRequest) {
 
       // Convert File to Buffer
       const arrayBuffer = await file.arrayBuffer()
-      pdfBuffer = Buffer.from(arrayBuffer)
+      uploadedPdfBuffer = Buffer.from(arrayBuffer)
       
       // Extract text from PDF
-      const extractedText = await extractTextFromPDF(pdfBuffer)
+      const extractedText = await extractTextFromPDF(uploadedPdfBuffer)
       if (!extractedText) {
         return NextResponse.json(
           { error: 'Failed to extract text from PDF' },
@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
     ]
 
     // Generate PDF report
-    const pdfBuffer = await generatePDFReport(mockCandidates)
-    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64')
+    const generatedPdfBuffer = await generatePDFReport(mockCandidates)
+    const pdfBase64 = Buffer.from(generatedPdfBuffer).toString('base64')
 
     // Prepare response data
     const responseData = {
