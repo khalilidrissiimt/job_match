@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       const arrayBuffer = await file.arrayBuffer()
       uploadedPdfBuffer = Buffer.from(arrayBuffer)
       
-      // Extract text from PDF
-      const extractedText = await extractTextFromPDF(uploadedPdfBuffer)
+      // Extract text from PDF - convert Buffer to ArrayBuffer
+      const extractedText = await extractTextFromPDF(arrayBuffer)
       if (!extractedText) {
         return NextResponse.json(
           { error: 'Failed to extract text from PDF' },
