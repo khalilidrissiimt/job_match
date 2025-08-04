@@ -1,6 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export default function EmailCollector() {
   const [email, setEmail] = useState('')
@@ -20,18 +26,17 @@ export default function EmailCollector() {
     setMessage('')
 
     try {
-      const response = await fetch('/api/email-collector', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim() }),
-      })
+      const { error } = await supabase
+        .from('incoming_emails')
+        .insert([
+          {
+            email: email.trim(),
+            received_at: new Date().toISOString()
+          }
+        ])
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to save email')
+      if (error) {
+        throw error
       }
 
       setStatus('success')

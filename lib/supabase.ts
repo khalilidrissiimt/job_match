@@ -1,9 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Validate environment variables
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables')
+}
+
+export const supabase = createClient(
+  supabaseUrl || '',
+  supabaseKey || ''
+)
 
 export interface Candidate {
   id: string
@@ -23,6 +31,12 @@ export interface MatchedCandidate {
 }
 
 export async function fetchCandidatesPaginated(limit = 1000): Promise<Candidate[]> {
+  // Check if Supabase is properly configured
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Supabase not configured')
+    return []
+  }
+
   const allCandidates: Candidate[] = []
   let offset = 0
 
